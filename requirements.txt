@@ -1,0 +1,4 @@
+python-telegram-bot[all]==21.6
+python-dotenv==1.0.1
+yookassa==3.2.0
+pytz==2024.2
