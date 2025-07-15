@@ -1,205 +1,177 @@
-# README.md для HappyFaceChat Bot
+# HappyFaceBot README
 
-Telegram-бот для управления доступом к закрытой супергруппе, обработки подписок и платежей через ЮKassa. Дает пробный доступ на 5 дней, продлевает подписки и удаляет пользователей из группы при истечении подписки.
+This is a Telegram bot for managing subscriptions and access to a private channel. The bot handles user subscriptions, payments via YooKassa, and sends welcome messages upon joining the channel. Below are instructions for setting up and running the bot locally or on a server.
 
-## Требования
+<br>
+Below is the proposed project structure for the HappyFaceBot Telegram bot project, based on the context provided and typical practices for a Python-based Telegram bot with database and configuration management. This structure ensures modularity, maintainability, and ease of deployment both locally and on a server like PythonAnywhere.
 
-* Python 3.9+ (для локального запуска).
-* Аккаунт на PythonAnywhere (для сервера).
-* Git Bash (для Windows, загрузка файлов).
-* Токен бота от [BotFather](https://t.me/BotFather).
-* ЮKassa: SHOP\_ID и SECRET\_KEY.
-* SQLite база: data/subscriptions.db.
-* Закрытая супергруппа Telegram с ботом-администратором.
+- - -
 
-## Структура проекта
+# HappyFaceBot Project Structure
 
 text
 СвернутьПеренос
 Копировать
 HappyFaceBot/
-├──
-│ ├── bot.py # Код бота
-│ ├── database.py # Работа с базой
-│ ├── .env # Настройки
-│ ├── requirements.txt # Библиотеки
-│ └── data/
-│ └── subscriptions.db # База данных
+├── # Main project directory
+│ ├── bot.py # Main bot script with handlers and logic
+│ ├── database.py # Database connection and query functions
+│ ├── .env # Environment variables (e.g., TOKEN, CHANNEL\_ID)
+│ ├── data/ # Directory for persistent data
+│ │ ├── subscriptions.db # SQLite database file
+│ ├── bot.log # Log file for debugging
+│ ├── requirements.txt # List of Python dependencies
+│ └── README.md # Project documentation (this file)
+├── .gitignore # Git ignore file to exclude sensitive files
+
+## Prerequisites
+
+* **Python**: Version 3.9 or higher
+* **Dependencies**:
+    * python-telegram-bot==20.7
+    * yookassa==3.2.0
+    * python-dotenv==1.0.1
+* **Telegram Bot Token**: Obtain from [BotFather](https://t.me/BotFather)
+* **YooKassa Account**: For payment processing
+* **SQLite**: For database management
+* **Server**: PythonAnywhere or similar (for server deployment)
+
+## Setup Instructions
+
+### 1\. Clone the Repository
+
+bash
+СвернутьПереносИсполнить
+Копироватьgit <span class="colour" style="color: rgb(230, 192, 123);">clone</span> [https://github.com/](https://github.com/)\<your-username>/HappyFaceBot.git
+<span class="colour" style="color: rgb(230, 192, 123);">cd</span> HappyFaceBot/TelegramBot
+
 <br>
-## Запуск бота
+### 2\. Install Dependencies
 
-### 1\. Локальный запуск \(для тестов\)
+Create and activate a virtual environment, then install dependencies:
 
-#### Шаг 1: Подготовка файлов
-
-* Скопируйте bot.py, database.py, .env, requirements.txt, data/subscriptions.db в папку, например, \~/HappyFaceBot/TelegramBot.
-
-#### Шаг 2: Настройка .env
-
-* В .env укажите:
-env
-СвернутьПеренос
-Копировать
-<span class="colour" style="color: rgb(209, 154, 102);">YOOKASSA\_SHOP\_ID</span>=ваш\_идентификатор
-<span class="colour" style="color: rgb(209, 154, 102);">YOOKASSA\_SECRET\_KEY</span>=ваш\_ключ
-<span class="colour" style="color: rgb(209, 154, 102);">SUBSCRIPTION\_PRICE</span>=
-<span class="colour" style="color: rgb(209, 154, 102);">TELEGRAM\_BOT\_TOKEN</span>=
-<span class="colour" style="color: rgb(209, 154, 102);">CHANNEL\_ID</span>= <span class="colour" style="color: rgb(92, 99, 112);">*\# ID супергруппы \(@GetIDsBot\)*</span>
-<span class="colour" style="color: rgb(209, 154, 102);">CHAT\_LINK</span>=
-<span class="colour" style="color: rgb(209, 154, 102);">LINK\_CLOSED\_CHANNEL</span>=
-<span class="colour" style="color: rgb(209, 154, 102);">TRIAL\_DAYS</span>=<span class="colour" style="color: rgb(209, 154, 102);">5</span>
-<span class="colour" style="color: rgb(209, 154, 102);">ADMIN\_ID</span>= <span class="colour" style="color: rgb(92, 99, 112);">*\# ID супергруппы \(@userinfobot\)*</span>
-<span class="colour" style="color: rgb(209, 154, 102);">FRIEND\_ID</span>= <span class="colour" style="color: rgb(92, 99, 112);">*\# ID супергруппы \(@userinfobot\)*</span>
-
-#### Шаг 3: Установка библиотек
-
-* В терминале (в папке ):
 bash
 СвернутьПереносИсполнить
 Копировать
-pip install -r requirements.txt
-* В requirements.txt:
-text
-python-telegram-bot==20.7
-python-dotenv==1.0.1
-yookassa==3.2.0
-pytz==2024.2
+python -m venv venv
+<span class="colour" style="color: rgb(230, 192, 123);">source</span> venv/bin/activate <span class="colour" style="color: rgb(92, 99, 112);">*\# On Windows: venv\Scripts\activate*</span>
+pip install python-telegram-bot==20.7 yookassa==3.2.0 python-dotenv==1.0.1
 
-#### Шаг 4: Добавление бота в супергруппу
+<br>
+### 3\. Configure Environment Variables
 
-* Добавьте @HappyFaceChat\_bot в супергруппу как администратора:
-    * Права: отправка сообщений, управление участниками, создание ссылок.
-* Включите **"Скрыть историю для новых участников"**.
+Create a .env file in the TelegramBot directory with the following content:
 
-#### Шаг 5: Запуск
+bash
+СвернутьПереносИсполнить
+Копировать
+TOKEN=<your\_bot\_token>
+CHANNEL\_ID=<your\_channel\_id>
+CHAT\_LINK=<your\_chat\_link>
+ADMIN\_ID=<your\_admin\_id>
+FRIEND\_ID=<friend\_id\_if\_any>
+YOOKASSA\_SHOP\_ID=<yookassa\_shop\_id>
+YOOKASSA\_SECRET\_KEY=<yookassa\_secret\_key>
 
-* Выполните:
+<br>
+### 4\. Set Up the Database
+
+The bot uses an SQLite database (subscriptions.db) to store user data.
+
+* Ensure the data directory exists: mkdir -p data
+* The database is automatically created when the bot runs for the first time.
+
+### 5\. Running Locally
+
+Run the bot in polling mode:
+
 bash
 СвернутьПереносИсполнить
 Копировать
 python bot.py
-* Логи в bot.log.
-* Проверьте через /start в Telegram.
 
-#### Шаг 6: Остановка
+<br>
+The bot will start and log to bot.log. Ensure no other instances are running to avoid telegram.error.Conflict errors.
 
-* Нажмите Ctrl+C.
+### 6\. Running on a Server \(PythonAnywhere\)
 
-### 2\. Запуск на сервере \(PythonAnywhere\)
-
-#### Шаг 1: Загрузка файлов
-
-* В Git Bash (из HappyFaceBot/):
-bash
-СвернутьПереносИсполнить
-Копироватьscp bot.py [HappyFaceBot@ssh.pythonanywhere.com](mailto:HappyFaceBot@ssh.pythonanywhere.com):/home/HappyFaceBot/bot.py
-scp .env [HappyFaceBot@ssh.pythonanywhere.com](mailto:HappyFaceBot@ssh.pythonanywhere.com):/home/HappyFaceBot/.env
-scp requirements.txt [HappyFaceBot@ssh.pythonanywhere.com](mailto:HappyFaceBot@ssh.pythonanywhere.com):/home/HappyFaceBot/requirements.txt
-scp database.py [HappyFaceBot@ssh.pythonanywhere.com](mailto:HappyFaceBot@ssh.pythonanywhere.com):/home/HappyFaceBot/database.py
-scp -r data [HappyFaceBot@ssh.pythonanywhere.com](mailto:HappyFaceBot@ssh.pythonanywhere.com):/home/HappyFaceBot/
-
-#### Шаг 2: Проверка файлов
-
-* В PythonAnywhere → **Files** проверьте /home/HappyFaceBot/:
-    * bot.py, .env, requirements.txt, database.py, data/subscriptions.db.
-* Убедитесь, что .env корректен.
-
-#### Шаг 3: Установка библиотек
-
-* В Bash-консоли:
+1. **Upload Files**:
+    * Upload the TelegramBot directory to /home/\<your-username>/TelegramBot on PythonAnywhere.
+2. **Set Up Virtual Environment**:
 bash
 СвернутьПереносИсполнить
 Копировать
-pip3 install --user -r /home/HappyFaceBot/requirements.txt
-* Если есть виртуальное окружение:
-bash
-СвернутьПереносИсполнить
-Копировать
-<span class="colour" style="color: rgb(230, 192, 123);">source</span> /home/HappyFaceBot/.venv/bin/activate
-pip install -r /home/HappyFaceBot/requirements.txt
-
-#### Шаг 4: Настройка веб-приложения
-
-* В PythonAnywhere → **Web**:
-    * Создайте приложение: **Add a new web app** → **Manual configuration** → **Python 3.13**.
-    * Настройки:
-        * **Source code**: /home/HappyFaceBot/bot.py.
-        * **Working directory**: /home/HappyFaceBot/TelegramBot.
-        * **WSGI** (/var/www/happyfacebot\_pythonanywhere\_com\_wsgi.py):
+mkvirtualenv --python=/usr/bin/python3.9 your\_env
+pip install python-telegram-bot==20.7 yookassa==3.2.0 python-dotenv==1.0.1
+3. **Configure Task** (for polling mode):
+    * In PythonAnywhere, go to **Tasks** and create a task:
+        * Command: python /home/\<your-username>/bot.py
+        * Virtualenv: /home/\<your-username>/.virtualenvs/your\_env
+4. **Configure Webhook** (recommended):
+    * Update bot.py to use application.run\_webhook:
+    python
+    СвернутьПереносИсполнить
+    Копировать
+    application.run\_webhook(
+    listen=<span class="colour" style="color: rgb(152, 195, 121);">"0.0.0.0"</span>,
+    port=<span class="colour" style="color: rgb(209, 154, 102);">8443</span>,
+    url\_path=<span class="colour" style="color: rgb(152, 195, 121);">"/webhook"</span>,
+    webhook\_url=<span class="colour" style="color: rgb(152, 195, 121);">"https://\<your-username>.[pythonanywhere.com/webhook](http://pythonanywhere.com/webhook)"</span>
+    )
+    * Set up a web app in PythonAnywhere:
+        * Source code: /home/\<your-username>/TelegramBot
+        * WSGI file (/var/www/\<your-username>\_pythonanywhere\_com\_wsgi.py):
         python
         СвернутьПереносИсполнить
         Копировать
         <span class="colour" style="color: rgb(198, 120, 221);">import</span> sys
-        path = <span class="colour" style="color: rgb(152, 195, 121);">'/home/HappyFaceBot/TelegramBot'</span>
+        path = <span class="colour" style="color: rgb(152, 195, 121);">'/home/\<your-username>/TelegramBot'</span>
         <span class="colour" style="color: rgb(198, 120, 221);">if</span> path <span class="colour" style="color: rgb(198, 120, 221);">not</span> <span class="colour" style="color: rgb(198, 120, 221);">in</span> sys.path:
         sys.path.append(path)
-        <span class="colour" style="color: rgb(198, 120, 221);">from</span> bot <span class="colour" style="color: rgb(198, 120, 221);">import</span> main
-        main()
-        * **Virtualenv** (если есть): /home/HappyFaceBot/.venv.
-
-#### Шаг 5: Добавление бота в супергруппу
-
-* Как в локальном запуске.
-
-#### Шаг 6: Запуск
-
-* В **Web** нажмите **Reload**.
-* Проверьте bot.log:
-text
-СвернутьПеренос
-Копировать
-2025-07-13 HH:MM:SS - \_\_main\_\_ - INFO - Bot started and ready to accept payments
-
-### 3\. Тестирование
-
-#### Тесты
-
-* Отправьте /start, /check, /rejoin, /check\_payment в Telegram.
-* Для проверки исключения:
-    * В базе:
+        <span class="colour" style="color: rgb(198, 120, 221);">from</span> bot <span class="colour" style="color: rgb(198, 120, 221);">import</span> application
+    * Set Webhook:
     bash
     СвернутьПереносИсполнить
-    Копировать
-    sqlite3 /home/HappyFaceBot/data/subscriptions.db
-    <br>
-sql
-    СвернутьПеренос
-    Копировать
-    UPDATE users <span class="colour" style="color: rgb(198, 120, 221);">SET</span> subscription\_end = <span class="colour" style="color: rgb(152, 195, 121);">'2025-07-10 00:00:00'</span> <span class="colour" style="color: rgb(198, 120, 221);">WHERE</span> user\_id = ВАШ\_ИД;
-    .exit
-    * В bot.py временно замените:
-    python
-    СвернутьПереносИсполнить
-    Копировать
-    application.job\_queue.run\_repeating(check\_subscriptions, interval=<span class="colour" style="color: rgb(209, 154, 102);">86400</span>, first=<span class="colour" style="color: rgb(209, 154, 102);">10</span>)
-    <br>
-на:
-    python
-    СвернутьПереносИсполнить
-    Копировать
-    application.job\_queue.run\_once(check\_subscriptions, when=<span class="colour" style="color: rgb(209, 154, 102);">10</span>)
-    * Загрузите bot.py и перезапустите приложение.
+    Копироватьcurl -X POST [https://api.telegram.org/bot](https://api.telegram.org/bot)<your\_bot\_token>/setWebhook?url=https://\<your-username>.[pythonanywhere.com/webhook](http://pythonanywhere.com/webhook)
+    * Reload the web app in PythonAnywhere.
 
-#### Проблемы
+### 7\. Bot Permissions
 
-* **"Conflict: terminated by other getUpdates request"**:
-    * Не запускайте python bot.py вручную.
-    * Проверьте процессы:
-    bash
-    СвернутьПереносИсполнить
-    Копировать
-    ps aux \| grep python
-    <span class="colour" style="color: rgb(230, 192, 123);">kill</span> \<PID>
-    * Перезапустите веб-приложение.
-* **Ошибки ссылок**:
-    * Проверьте CHANNEL\_ID и права бота.
-* **Ошибки оплаты**:
-    * Проверьте ЮKassa ключи в .env.
+* Add the bot as an admin to the private channel (CHANNEL\_ID) with "Manage Members" permission.
+* In BotFather, run /setprivacy and set to Disabled to receive chat\_member updates.
 
-#### Логи
+## Known Issues
 
-* Проверяйте bot.log для отладки.
+* **Welcome Message Not Sent After Joining Private Channel**:
+    * **Problem**: The bot fails to send welcome messages to users upon joining the private channel.
+    * **Cause**: Likely due to missing chat\_member updates, incorrect bot permissions, or issues with the database (e.g., invalid subscription status).
+    * **Solution**:
+        1. Ensure the bot has admin rights in the channel with "Manage Members" permission.
+        2. Verify /setprivacy is set to Disabled in BotFather.
+        3. Check the database (data/subscriptions.db) to confirm user subscriptions:
+        bash
+        СвернутьПереносИсполнить
+        Копировать
+        sqlite3 data/subscriptions.db
+        SELECT user\_id, username, subscription\_end, trial\_used, join\_date, active FROM users;
+        <br>
+Ensureactive = 1 and subscription\_end is in the future.
+        4. Check logs (bot.log) for errors in handle\_chat\_member\_update.
+        5. Avoid running multiple bot instances to prevent telegram.error.Conflict errors.
 
-## Примечания
+## Logs
 
-* Делайте резервную копию subscriptions.db.
+* Logs are saved to /home/\<your-username>/bot.log (or locally to bot.log).
+* Check logs for errors like telegram.error.Conflict or database issues.
+
+## Testing
+
+1. Start the bot locally or on the server.
+2. Join the private channel with a test user (ensure the user has an active subscription in the database).
+3. Verify that the welcome message is sent and check bot.log for details.
+
+If you encounter issues, provide:
+
+* Logs from bot.log.
+* Output of curl [https://api.telegram.org/bot](https://api.telegram.org/bot)<your\_bot\_token>/getWebhookInfo.
+* Database query results: SELECT \* FROM users;.
