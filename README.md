@@ -9,20 +9,19 @@ Below is the proposed project structure for the HappyFaceBot Telegram bot projec
 
 # HappyFaceBot Project Structure
 
-text
-СвернутьПеренос
-Копировать
+```
 HappyFaceBot/
-├── # Main project directory
-│ ├── bot.py # Main bot script with handlers and logic
-│ ├── database.py # Database connection and query functions
-│ ├── .env # Environment variables (e.g., TOKEN, CHANNEL\_ID)
-│ ├── data/ # Directory for persistent data
-│ │ ├── subscriptions.db # SQLite database file
-│ ├── bot.log # Log file for debugging
-│ ├── requirements.txt # List of Python dependencies
-│ └── README.md # Project documentation (this file)
-├── .gitignore # Git ignore file to exclude sensitive files
+├── TelegramBot/                 # Main project directory
+│   ├── bot.py                   # Main bot script with handlers and logic
+│   ├── database.py              # Database connection and query functions
+│   ├── .env                     # Environment variables (e.g., TOKEN, CHANNEL_ID)
+│   ├── data/                    # Directory for persistent data
+│   │   ├── subscriptions.db     # SQLite database file
+│   ├── bot.log                  # Log file for debugging
+│   ├── requirements.txt         # List of Python dependencies
+│   └── README.md                # Project documentation (this file)
+├── .gitignore                   # Git ignore file to exclude sensitive files
+```
 
 ## Prerequisites
 
